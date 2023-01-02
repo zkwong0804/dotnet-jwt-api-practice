@@ -30,18 +30,20 @@ namespace JwtApiPracitice
             //        policy.WithOrigins("http://localhost:3000/");
             //    });
             //});
-            builder.Services.AddCors();
+            builder.Services.AddCors(opt => {
+                opt.AddPolicy(name: corsPolicyName, policy => {
+                    policy.WithOrigins("http://localhost:3000")
+                    .WithHeaders(HeaderNames.ContentType, HeaderNames.Authorization);
+                });
+            });
 
             // Add services to the container.
             builder.Services.AddControllers();
 
             var app = builder.Build();
 
-            app.UseCors(opt => {
-                opt.WithOrigins("http://localhost:3000")
-                .WithHeaders(HeaderNames.ContentType, HeaderNames.Authorization);
-            });
             app.UseHttpsRedirection();
+            app.UseCors(corsPolicyName);
 
             app.UseAuth();
 
